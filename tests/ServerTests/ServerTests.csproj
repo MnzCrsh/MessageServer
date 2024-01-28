@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\MessageServer\MessageServer\MessageServer.csproj" />
+      <ProjectReference Include="..\..\src\MessageServer\ProducerMessageServer\ProducerMessageServer.csproj" />
     </ItemGroup>
 
 </Project>

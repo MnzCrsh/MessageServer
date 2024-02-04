@@ -1,11 +1,14 @@
-using MessageServer;
+using MessageServer.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.RunServices();
+builder.RunPostgresDb();
+builder.RunServices();
+
 
 var app = builder.Build();
+
 
 
 app.UseSwagger();

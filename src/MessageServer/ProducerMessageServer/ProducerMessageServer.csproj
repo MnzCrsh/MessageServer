@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>MessageServer</RootNamespace>
+        <UserSecretsId>0486d5c9-e076-4730-8024-ff0ba821eaaa</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,9 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Application\" />
-      <Folder Include="Domain\" />
-      <Folder Include="Infrastructure\" />
       <Folder Include="Presentation\Controllers\" />
     </ItemGroup>
 

@@ -4,7 +4,7 @@ namespace MessageServer.Infrastructure;
 
 public interface IPetRepository
 {
-    public Task CreateAsync(PetDto pet);
+    public Task<Guid> CreateAsync(PetDto pet);
     public Task<PetDto> GetAsync(int id);
     public Task<IEnumerable<PetDto>> GetAllAsync();
     public Task UpdateAsync(PetDto pet);

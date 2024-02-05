@@ -4,9 +4,23 @@ namespace MessageServer.Infrastructure;
 
 public class PetRepository : IPetRepository
 {
-    public Task CreateAsync(PetDto pet)
+    public PetRepository(PostgresDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
+    }
+    private readonly PostgresDbContext _dbContext;
+
+    public async Task<Guid> CreateAsync(PetDto pet)
+    {
+        var newPet = new PetDto
+        {
+            Id = new Guid(),
+            Name = pet.Name,
+            PetAge = pet.PetAge
+        };
+        _dbContext.Add(newPet);
+        await _dbContext.SaveChangesAsync();
+        return newPet.Id;
     }
 
     public Task<PetDto> GetAsync(int id)

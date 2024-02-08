@@ -1,6 +1,7 @@
 ﻿using MessageServer.Domain;
+using MessageServer.Infrastructure.Repositories.Interfaces;
 
-namespace MessageServer.Infrastructure;
+namespace MessageServer.Infrastructure.Repositories.Implementations;
 
 public class PetRepository : IPetRepository
 {
@@ -16,7 +17,8 @@ public class PetRepository : IPetRepository
         {
             Id = new Guid(),
             Name = pet.Name,
-            PetAge = pet.PetAge
+            PetAge = pet.PetAge,
+            IsMarkedToDelete = false
         };
         _dbContext.Add(newPet);
         await _dbContext.SaveChangesAsync();
@@ -29,6 +31,11 @@ public class PetRepository : IPetRepository
     }
 
     public Task<IEnumerable<PetDto>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<PetDto>> GetPetsByOwnerAsync(int ownerId)
     {
         throw new NotImplementedException();
     }

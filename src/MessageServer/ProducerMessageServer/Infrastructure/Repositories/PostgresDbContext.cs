@@ -1,7 +1,7 @@
 ﻿using MessageServer.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace MessageServer.Infrastructure;
+namespace MessageServer.Infrastructure.Repositories;
 
 public class PostgresDbContext : DbContext
 {

@@ -1,4 +1,5 @@
 ﻿using FakeItEasy;
+using FluentValidation;
 using MessageServer.Domain;
 using MessageServer.Infrastructure;
 
@@ -7,17 +8,18 @@ namespace ServerTests;
 public class PetRepoTest
 {
     [Fact]
-    public async Task CreateAsync_ReturnsValue()
+    public async Task CreateAsync_ValidPetDtoInput_CreatesInDataBase()
     {
-        var fPet = A.Dummy<PetDto>();
-        var fDbContext = A.Fake<PostgresDbContext>();
-        var petRepo = new PetRepository(fDbContext);
+        var petDto = new PetDto
+        {
+            Id = new Guid(), Name = "DeathMetal", PetAge = 100
+        };
+        var petValidator = new PetDtoValidator();
+        var fPetRepo = A.Fake<IPetRepository>();
         
-        //A.CallTo(() => fDbContext.Add(A<PetDto>.Ignored)).Returns(fPet);
-
-        var result = await petRepo.CreateAsync(fPet);
+        await fPetRepo.CreateAsync(pet: petDto);
         
-        Assert.NotNull(result);
-        A.CallTo(() => fDbContext.Add(A<PetDto>.Ignored)).MustHaveHappened(); 
+        await petValidator.ValidateAndThrowAsync(petDto);
+        A.CallTo(() => fPetRepo.CreateAsync(A<PetDto>._)).MustHaveHappenedOnceExactly();
     }
 }

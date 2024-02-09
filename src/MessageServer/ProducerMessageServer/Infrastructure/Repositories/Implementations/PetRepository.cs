@@ -11,9 +11,9 @@ public class PetRepository : IPetRepository
     }
     private readonly PostgresDbContext _dbContext;
 
-    public async Task<Guid> CreateAsync(PetDto pet)
+    public async Task<Guid> CreateAsync(Pet pet)
     {
-        var newPet = new PetDto
+        var newPet = new Pet
         {
             Id = new Guid(),
             Name = pet.Name,
@@ -25,7 +25,7 @@ public class PetRepository : IPetRepository
         return newPet.Id;
     }
 
-    public Task<PetDto> GetAsync(int id)
+    public Task<Pet> GetAsync(int id)
     {
         throw new NotImplementedException();
     }
@@ -35,12 +35,7 @@ public class PetRepository : IPetRepository
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<PetDto>> GetPetsByOwnerAsync(int ownerId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateAsync(PetDto pet)
+    public Task UpdateAsync(Pet pet)
     {
         throw new NotImplementedException();
     }

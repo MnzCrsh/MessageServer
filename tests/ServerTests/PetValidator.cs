@@ -4,9 +4,9 @@ using MessageServer.Domain;
 
 namespace ServerTests;
 
-public class PetDtoValidator : AbstractValidator<PetDto>
+public class PetValidator : AbstractValidator<Pet>
 {
-    public PetDtoValidator()
+    public PetValidator()
     {
         RuleFor(pet => pet.Name)
             .NotEmpty()

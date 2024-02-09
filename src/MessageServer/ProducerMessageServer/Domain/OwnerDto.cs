@@ -1,6 +1,6 @@
 ﻿namespace MessageServer.Domain;
 
-public record PetOwnerDto
+public record OwnerDto
 {
     public required Guid Id                       { get; set; }
     

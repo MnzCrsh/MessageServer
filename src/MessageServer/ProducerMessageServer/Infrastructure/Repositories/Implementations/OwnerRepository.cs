@@ -1,20 +1,21 @@
 ﻿using MessageServer.Domain;
 using MessageServer.Infrastructure.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace MessageServer.Infrastructure.Repositories.Implementations;
 
 
-public class PetOwnerRepository : IPetOwnerRepository
+public class OwnerRepository : IOwnerRepository
 {
-    public PetOwnerRepository(PostgresDbContext dbContext)
+    public OwnerRepository(PostgresDbContext dbContext)
     {
         _dbContext = dbContext;
     }
     private readonly PostgresDbContext _dbContext;
     
-    public async Task<Guid> CreateAsync(PetOwnerDto owner)
+    public async Task<Guid> CreateAsync(Owner owner)
     {
-        PetOwnerDto newOwner = new PetOwnerDto
+        Owner newOwner = new Owner
         {
             Id = new Guid(),
             Name = owner.Name,
@@ -25,19 +26,22 @@ public class PetOwnerRepository : IPetOwnerRepository
         return newOwner.Id;
     }
 
-    public async Task<PetOwnerDto> GetAsync(int id)
+    public async Task<Owner> GetAsync(int id)
     {
-        //TODO: To change
-        var owner = new PetOwnerDto { Name = "", Id = Guid.Empty};
-        return owner;
+        var existingOwner = await _dbContext.PetOwners
+            .Where(p => p.Id.Equals(id) && !p.IsMarkedToDelete)
+            .Select(r => r)
+            .SingleOrDefaultAsync() ?? 
+                            throw new InvalidOperationException($"{id} dont exist");
+        return existingOwner;
     }
 
-    public Task<IEnumerable<PetOwnerDto>> GetAllAsync()
+    public Task<IEnumerable<OwnerDto>> GetAllAsync()
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateAsync(PetOwnerDto owner)
+    public Task UpdateAsync(Owner owner)
     {
         throw new NotImplementedException();
     }

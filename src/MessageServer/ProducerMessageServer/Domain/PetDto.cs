@@ -7,7 +7,7 @@ public record PetDto
     [Required]
     public Guid Id               { get; set; }
     
-    public PetOwnerDto? PetOwner { get; set; }
+    public OwnerDto? PetOwner { get; set; }
     
     public required string Name  { get; set; } = null!;
     

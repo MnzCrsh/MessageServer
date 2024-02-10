@@ -10,9 +10,4 @@ public record PetDto
     public OwnerDto? PetOwner { get; set; }
     
     public required string Name  { get; set; } = null!;
-    
-    [Required, Range(1,100)]
-    public int PetAge            { get; set; }
-    
-    public bool IsMarkedToDelete { get; set; }
 }

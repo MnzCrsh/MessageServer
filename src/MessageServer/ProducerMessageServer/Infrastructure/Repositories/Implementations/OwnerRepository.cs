@@ -15,11 +15,13 @@ public class OwnerRepository : IOwnerRepository
     
     public async Task<Guid> CreateAsync(Owner owner)
     {
-        Owner newOwner = new Owner
+        var newOwner = new Owner
         {
             Id = new Guid(),
             Name = owner.Name,
-            IsMarkedToDelete = false
+            IsMarkedToDelete = false,
+            PassportNumber = owner.PassportNumber,
+            PassportSeries = owner.PassportSeries
         };
         _dbContext.Add(newOwner);
         await _dbContext.SaveChangesAsync();
@@ -29,26 +31,62 @@ public class OwnerRepository : IOwnerRepository
     public async Task<Owner> GetAsync(int id)
     {
         var existingOwner = await _dbContext.PetOwners
-            .Where(p => p.Id.Equals(id) && !p.IsMarkedToDelete)
-            .Select(r => r)
+            .Where(o => o.Id.Equals(id) && !o.IsMarkedToDelete)
+            .Select(o => o)
             .SingleOrDefaultAsync() ?? 
                             throw new InvalidOperationException($"{id} dont exist");
         return existingOwner;
     }
 
-    public Task<IEnumerable<OwnerDto>> GetAllAsync()
+    public async Task<IEnumerable<OwnerDto>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        var owners = await _dbContext.PetOwners
+            .Where(o => !o.IsMarkedToDelete)
+            .Select(o => new OwnerDto
+            {
+                Id = o.Id,
+                Name = o.Name,
+                OwnedPets = o.OwnedPets!
+                    .Select(pet => new PetDto
+                    { 
+                        Id = pet.Id,
+                        Name = pet.Name,
+                        PetOwner = pet.PetOwner 
+                    })
+            }).ToListAsync();
+        return owners;
     }
 
-    public Task UpdateAsync(Owner owner)
+    public async Task UpdateAsync(Owner owner)
     {
-        throw new NotImplementedException();
+        var oldOwnerData = await _dbContext.PetOwners
+            .FirstOrDefaultAsync(o => o.Id.Equals(owner.Id));
+        
+        UpdateOwnerData(oldOwnerData ?? throw new ArgumentNullException
+            ($"Cant find owner with ID: {owner.Id}"), owner);
+
+        await _dbContext.SaveChangesAsync();
     }
     
 
     public Task DeleteAsync(int id)
     {
         throw new NotImplementedException();
+    }
+
+    private void UpdateOwnerData(Owner oldOwnerData, Owner newOwnerData)
+    {
+        oldOwnerData.Name = newOwnerData.Name;
+        oldOwnerData.PassportNumber = newOwnerData.PassportNumber;
+        oldOwnerData.PassportSeries = newOwnerData.PassportSeries;
+        oldOwnerData.IsMarkedToDelete = newOwnerData.IsMarkedToDelete;
+        
+        // Get information about entity state
+        var entityEntry = _dbContext.Entry(oldOwnerData);
+        
+        // Check if entity has changed
+        Console.WriteLine(entityEntry.State == EntityState.Modified
+            ? "Owner data has been changed."
+            : "Owner data wasn't changed.");
     }
 }

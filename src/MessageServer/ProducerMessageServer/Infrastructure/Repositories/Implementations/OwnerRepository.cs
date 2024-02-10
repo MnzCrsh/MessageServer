@@ -13,6 +13,7 @@ public class OwnerRepository : IOwnerRepository
     }
     private readonly PostgresDbContext _dbContext;
     
+    //TODO: Delegate owner to factory/ Maybe hash passport data
     public async Task<Guid> CreateAsync(Owner owner)
     {
         var newOwner = new Owner

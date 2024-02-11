@@ -5,6 +5,13 @@ namespace MessageServer.Infrastructure.Repositories.Implementations;
 
 public static class PetOwnerRepositoryExtension
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="ownerRepo"></param>
+    /// <param name="petRepo"></param>
+    /// <param name="ownerId"></param>
+    /// <param name="petId"></param>
     public static async Task AddPetAsync(this IOwnerRepository ownerRepo,
                                               IPetRepository petRepo,int ownerId, int petId)
     {
@@ -12,6 +19,13 @@ public static class PetOwnerRepositoryExtension
         owner.OwnedPets?.Add(pet);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="ownerRepo"></param>
+    /// <param name="petRepo"></param>
+    /// <param name="ownerId"></param>
+    /// <param name="petId"></param>
     public static async Task RemovePetAsync(this IOwnerRepository ownerRepo,
                                                  IPetRepository petRepo,int ownerId, int petId)
     {
@@ -20,6 +34,14 @@ public static class PetOwnerRepositoryExtension
     }
     
     //HACK:
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="ownerRepo"></param>
+    /// <param name="petRepo"></param>
+    /// <param name="ownerId"></param>
+    /// <param name="petId"></param>
+    /// <returns></returns>
     private static async Task<(Owner, Pet)> GetOwnerAndPetAsync(
         this IOwnerRepository ownerRepo, IPetRepository petRepo, int ownerId, int petId)
     {

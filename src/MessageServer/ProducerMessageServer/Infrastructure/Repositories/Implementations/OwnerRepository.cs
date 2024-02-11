@@ -7,13 +7,16 @@ namespace MessageServer.Infrastructure.Repositories.Implementations;
 
 public class OwnerRepository : IOwnerRepository
 {
-    public OwnerRepository(PostgresDbContext dbContext)
+    private readonly PostgresDbContext _dbContext;
+    private readonly CircuitBreaker _circuitBreaker;
+    public OwnerRepository(PostgresDbContext dbContext,
+        CircuitBreaker.CircuitBreakerFactory circuitBreakerFactory)
     {
         _dbContext = dbContext;
+        _circuitBreaker = circuitBreakerFactory(TimeSpan.FromSeconds(5));
     }
-    private readonly PostgresDbContext _dbContext;
     
-    //TODO: Delegate owner to factory/ Maybe hash passport data
+    
     /// <summary>
     /// Asynchronously creates new Owner in database. Adds to database with DbContext
     /// </summary>
@@ -74,34 +77,89 @@ public class OwnerRepository : IOwnerRepository
     }
 
     /// <summary>
-    /// Asynchronously updates old Owner info to new Owner info
+    /// Asynchronously updates OLD Owner data to the NEW Owner data
     /// </summary>
-    /// <param name="owner">New Owner data with the same ID</param>
-    /// <param name="updateCallback"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public async Task UpdateAsync(Owner owner, Action<Owner,Owner> updateCallback)
+    /// <param name="newOwnerData">New Owner data with the same ID</param>
+    /// <exception cref="ArgumentNullException">Throws if owner with such ID don't exist in DB</exception>
+    public async Task UpdateAsync(Owner newOwnerData)
     {
         var oldOwnerData = await _dbContext.PetOwners
-            .FirstOrDefaultAsync(o => o.Id.Equals(owner.Id));
+            .FirstOrDefaultAsync(o => o.Id.Equals(newOwnerData.Id));
         
-        UpdateOwnerDataCallback(oldOwnerData ?? throw new ArgumentNullException
-            ($"Cant find owner with ID: {owner.Id}"), owner);
+        if (oldOwnerData is null)
+        {
+            throw new ArgumentNullException($"Cant find owner with ID: {newOwnerData.Id}");
+        }
+        
+        UpdateOwnerData(oldOwnerData,newOwnerData);
 
         await _dbContext.SaveChangesAsync();
     }
     
-
-    public Task DeleteAsync(int id)
+    /// <summary>
+    /// Asynchronously updates OLD Owner data to the NEW Owner data
+    /// </summary>
+    /// <param name="newOwnerData">New Owner data with the same ID</param>
+    /// <param name="updateCallback">Update delegate</param>
+    /// <exception cref="ArgumentNullException">Throws if owner with such ID don't exist in DB</exception>
+    public async Task UpdateAsync(Owner newOwnerData, Action<Owner, Owner>? updateCallback)
     {
-        throw new NotImplementedException();
+        var oldOwnerData = await _dbContext.PetOwners
+            .FirstOrDefaultAsync(o => o.Id.Equals(newOwnerData.Id));
+        
+        if (oldOwnerData is null)
+        {
+            throw new ArgumentNullException($"Cant find owner with ID: {newOwnerData.Id}");
+        }
+        
+        _circuitBreaker.Execute(()=>updateCallback?.Invoke(oldOwnerData,newOwnerData));
+
+        await _dbContext.SaveChangesAsync();
     }
 
     /// <summary>
+    /// Marks owner to delete
+    /// </summary>
+    /// <param name="id">ID of the Owner to delete</param>
+    /// <exception cref="ArgumentNullException">Throws if owner dont exist in DB</exception>
+    public async Task DeleteAsync(int id)
+    {
+        var owner = await _dbContext.PetOwners.FindAsync(id);
+        if (owner is null)
+        {
+            throw new ArgumentNullException($"Owner with ID: {id} does not exist");
+        }
+
+        owner.IsMarkedToDelete = true;
+        await _dbContext.SaveChangesAsync();
+    }
+    
+    /// <summary>
     /// 
     /// </summary>
-    /// <param name="oldOwnerData"></param>
-    /// <param name="newOwnerData"></param>
-    private void UpdateOwnerDataCallback(Owner oldOwnerData, Owner newOwnerData)
+    /// <param name="id">ID of the Owner to delete</param>
+    /// <param name="deleteCallback">Delete delegate</param>
+    /// <exception cref="ArgumentNullException">Throws if owner dont exist in DB</exception>
+    public async Task DeleteAsync(int id, Action<Owner>? deleteCallback)
+    {
+        var owner = await _dbContext.PetOwners.FindAsync(id);
+        if (owner is null)
+        {
+            throw new ArgumentNullException($"Owner with ID: {id} does not exist");
+        }
+
+        _circuitBreaker.Execute(()=> deleteCallback?.Invoke(owner));
+        await _dbContext.SaveChangesAsync();
+    }   
+    
+
+    /// <summary>
+    /// Default update callback implementation. Changes old data to the new.
+    /// Also checks if data was or wasn't changed already.
+    /// </summary>
+    /// <param name="oldOwnerData">Data to change</param>
+    /// <param name="newOwnerData">New data that'll replace old one</param>
+    private void UpdateOwnerData(Owner oldOwnerData, Owner newOwnerData)
     {
         oldOwnerData.Name = newOwnerData.Name;
         oldOwnerData.PassportNumber = newOwnerData.PassportNumber;

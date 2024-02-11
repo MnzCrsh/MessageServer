@@ -3,7 +3,8 @@ using MessageServer.Infrastructure.Repositories.Interfaces;
 
 namespace MessageServer.Infrastructure.Repositories.Implementations;
 
-public static class PetOwnerRepositoryExtension
+
+public static class PetOwnerManagementExtension
 {
     /// <summary>
     /// 

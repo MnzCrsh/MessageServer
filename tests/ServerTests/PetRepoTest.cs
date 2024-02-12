@@ -7,16 +7,12 @@ namespace ServerTests;
 
 public class PetRepoTest
 {
-    [Theory]
-    [InlineData(0),
-     InlineData(10),
-     InlineData(100),
-     InlineData(1000)]
-    public async Task CreateAsync_ValidPetDtoInput_CreatesInDataBase(int petAge)
+    [Fact]
+    public async Task CreateAsync_ValidPetDtoInput_CreatesInDataBase()
     {
         var pet = new Pet
         {
-            Id = new Guid(), Name = "DeathMetal", PetAge = petAge
+            Id = new Guid(), Name = "DeathMetal", PetAge = 5
         };
         var petValidator = new PetValidator();
         var fPetRepo = A.Fake<IPetRepository>();

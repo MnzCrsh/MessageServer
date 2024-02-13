@@ -43,7 +43,7 @@ public class OwnerRepository : IOwnerRepository
     /// <param name="id">ID of the existing Owner</param>
     /// <returns>Existing Owner from DB</returns>
     /// <exception cref="InvalidOperationException">Owner with such ID dont exist in DB</exception>
-    public async Task<Owner> GetAsync(int id)
+    public async Task<Owner> GetAsync(Guid id)
     {
         var existingOwner = await _dbContext.PetOwners
             .Where(o => o.Id.Equals(id) && !o.IsMarkedToDelete)
@@ -122,7 +122,7 @@ public class OwnerRepository : IOwnerRepository
     /// </summary>
     /// <param name="id">ID of the Owner to delete</param>
     /// <exception cref="ArgumentNullException">Throws if owner dont exist in DB</exception>
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         var owner = await _dbContext.PetOwners.FindAsync(id);
         if (owner is null)
@@ -140,7 +140,7 @@ public class OwnerRepository : IOwnerRepository
     /// <param name="id">ID of the Owner to delete</param>
     /// <param name="deleteCallback">Delete delegate</param>
     /// <exception cref="ArgumentNullException">Throws if owner dont exist in DB</exception>
-    public async Task DeleteAsync(int id, Action<Owner>? deleteCallback)
+    public async Task DeleteAsync(Guid id, Action<Owner>? deleteCallback)
     {
         var owner = await _dbContext.PetOwners.FindAsync(id);
         if (owner is null)

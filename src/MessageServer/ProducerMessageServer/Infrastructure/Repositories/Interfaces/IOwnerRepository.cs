@@ -16,7 +16,7 @@ public interface IOwnerRepository
     /// </summary>
     /// <param name="id">ID of the existing Owner</param>
     /// <returns>Existing Owner</returns>
-    public Task<Owner> GetAsync(int id);
+    public Task<Owner> GetAsync(Guid id);
     
     /// <summary>
     /// Asynchronously returns every owner from DB with linked pets
@@ -36,5 +36,5 @@ public interface IOwnerRepository
     /// </summary>
     /// <param name="id">ID of the Owner to delete</param>
     /// <returns></returns>
-    public Task DeleteAsync(int id);
+    public Task DeleteAsync(Guid id);
 }

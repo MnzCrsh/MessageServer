@@ -32,7 +32,7 @@ public class OwnerRepository : IOwnerRepository
             PassportNumber = owner.PassportNumber,
             PassportSeries = owner.PassportSeries
         };
-        _dbContext.Add(newOwner);
+        await _dbContext.AddAsync(newOwner);
         await _dbContext.SaveChangesAsync();
         return newOwner.Id;
     }

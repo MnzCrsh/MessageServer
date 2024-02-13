@@ -32,19 +32,20 @@ public class OwnerRepoTests
 
         result.Should().Be(fOwner.Id);
     }
-
+    
+    //TODO: Add exception path
+    
     [Fact]
     public async Task GetAsync_Should_Return_Owner_By_Valid_Id()
     {
         //Arrange
-        // var ownerId = Guid.Empty;
         var expectedOwner = CreateOwner();
-        
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
 
+        
         await using var dbContext = GetInMemoryDbContext();
         
-        dbContext.Add(expectedOwner);
+        await dbContext.AddAsync(expectedOwner);
         await dbContext.SaveChangesAsync();
 
         var repository = new OwnerRepository(dbContext, fCbf);
@@ -54,6 +55,34 @@ public class OwnerRepoTests
         
         //Assert
         result.Id.Should().Be(expectedOwner.Id);
+    }
+    
+    //TODO: Add exception path
+
+    [Fact]
+    public async Task GetAllAsync_ShouldReturnAllOwnerIEnumerable_WhenOwnerExist()
+    {
+        //Arrange
+        var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+
+        var dbContext = GetInMemoryDbContext();
+        var repository = new OwnerRepository(dbContext,fCbf);
+        
+        var expectedOwners = new List<Owner>();
+        for (int i = 0; i < 5; i++)
+        {
+            var owner = CreateOwner();
+            expectedOwners.Add(owner);
+        }
+
+        await dbContext.AddAsync(expectedOwners);
+
+        //TODO: MAP OWNER TO OWNER DTO
+        //Act
+        var result = await repository.GetAllAsync();
+
+        //Arrange
+        result.Should().OnlyContain(dto => expectedOwners.Any( ));
     }
     
     private static PostgresDbContext GetInMemoryDbContext()
@@ -69,7 +98,7 @@ public class OwnerRepoTests
     {
         var fOwner = new Owner
         {
-            Id = Guid.Empty,
+            Id = Guid.NewGuid(),
             Name = "name",
             PassportSeries = 0123,
             PassportNumber = 456789,
@@ -77,5 +106,15 @@ public class OwnerRepoTests
             OwnedPets = null
         };
         return fOwner;
+    }  
+    private static OwnerDto CreateOwnerDto()
+    {
+        var fDto = new OwnerDto()
+        {
+            Id = Guid.NewGuid(),
+            Name = "name",
+            OwnedPets = null
+        };
+        return fDto;
     }
 }

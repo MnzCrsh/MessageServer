@@ -65,24 +65,30 @@ public class OwnerRepoTests
         //Arrange
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
 
-        var dbContext = GetInMemoryDbContext();
-        var repository = new OwnerRepository(dbContext,fCbf);
-        
-        var expectedOwners = new List<Owner>();
+        await using var dbContext = GetInMemoryDbContext();
+        var repository = new OwnerRepository(dbContext, fCbf);
+
+        List<Owner> expectedOwners = new();
         for (int i = 0; i < 5; i++)
         {
             var owner = CreateOwner();
             expectedOwners.Add(owner);
+            await dbContext.AddAsync(owner);
         }
-
-        await dbContext.AddAsync(expectedOwners);
-
-        //TODO: MAP OWNER TO OWNER DTO
+        await dbContext.SaveChangesAsync();
+        
+        var expectedOwnersDtos = expectedOwners.Select(o => new OwnerDto
+        {
+            Id = o.Id,
+            Name = o.Name,
+            OwnedPets = null
+        }).ToList();
+        
         //Act
         var result = await repository.GetAllAsync();
 
-        //Arrange
-        result.Should().OnlyContain(dto => expectedOwners.Any( ));
+        //Assert
+        result.Should().OnlyContain(dto => expectedOwnersDtos.Any(o => o.Id == dto.Id));
     }
     
     private static PostgresDbContext GetInMemoryDbContext()
@@ -107,14 +113,4 @@ public class OwnerRepoTests
         };
         return fOwner;
     }  
-    private static OwnerDto CreateOwnerDto()
-    {
-        var fDto = new OwnerDto()
-        {
-            Id = Guid.NewGuid(),
-            Name = "name",
-            OwnedPets = null
-        };
-        return fDto;
-    }
 }

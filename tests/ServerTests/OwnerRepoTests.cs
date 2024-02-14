@@ -29,7 +29,6 @@ public class OwnerRepoTests
             fOwner.Id = result;
             dbContext.PetOwners.Any(o => o.Id == result).Should().BeTrue();
         }
-
         result.Should().Be(fOwner.Id);
     }
     
@@ -90,6 +89,33 @@ public class OwnerRepoTests
         //Assert
         result.Should().OnlyContain(dto => expectedOwnersDtos.Any(o => o.Id == dto.Id));
     }
+
+    [Fact]
+    public async Task UpdateAsync_UpdatesExistingOwner()
+    {
+        //Arrange
+        var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+
+        var existingOwner = CreateOwner();
+        var newOwner = CreateOwner(existingOwner.Id,"newName", 3456, 789483, false);
+
+        await using (var dbContext = GetInMemoryDbContext())
+        {
+            var repository = new OwnerRepository(dbContext, fCbf);
+            await dbContext.AddAsync(existingOwner);
+            await dbContext.SaveChangesAsync();
+            
+            //Act
+            await repository.UpdateAsync(newOwner);
+        }
+        
+        //Assert
+        await using (var context = GetInMemoryDbContext())
+        {
+            var changedOwner = await context.PetOwners.FindAsync(existingOwner.Id);
+                changedOwner.Should().BeEquivalentTo(newOwner);
+        }
+    }
     
     private static PostgresDbContext GetInMemoryDbContext()
     {
@@ -99,7 +125,7 @@ public class OwnerRepoTests
         var dbContext = new PostgresDbContext(options);
         return dbContext;
     }
-    
+
     private static Owner CreateOwner()
     {
         var fOwner = new Owner
@@ -109,6 +135,20 @@ public class OwnerRepoTests
             PassportSeries = 0123,
             PassportNumber = 456789,
             IsMarkedToDelete = false,
+            OwnedPets = null
+        };
+        return fOwner;
+    }
+
+    private static Owner CreateOwner(Guid id,string name, int series, int number, bool status)
+    {
+        var fOwner = new Owner
+        {
+            Id = id,
+            Name = name,
+            PassportSeries = series,
+            PassportNumber = number,
+            IsMarkedToDelete = status,
             OwnedPets = null
         };
         return fOwner;

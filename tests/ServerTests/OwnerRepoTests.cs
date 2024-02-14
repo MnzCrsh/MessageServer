@@ -32,7 +32,7 @@ public class OwnerRepoTests
         result.Should().Be(fOwner.Id);
     }
     
-    //TODO: Add exception path
+    //TODO: Add the exception path
     
     [Fact]
     public async Task GetAsync_Should_Return_Owner_By_Valid_Id()
@@ -56,7 +56,7 @@ public class OwnerRepoTests
         result.Id.Should().Be(expectedOwner.Id);
     }
     
-    //TODO: Add exception path
+    //TODO: Add the exception path
 
     [Fact]
     public async Task GetAllAsync_ShouldReturnAllOwnerIEnumerable_WhenOwnerExist()
@@ -76,6 +76,7 @@ public class OwnerRepoTests
         }
         await dbContext.SaveChangesAsync();
         
+        // ReSharper disable once IdentifierTypo
         var expectedOwnersDtos = expectedOwners.Select(o => new OwnerDto
         {
             Id = o.Id,
@@ -115,6 +116,75 @@ public class OwnerRepoTests
             var changedOwner = await context.PetOwners.FindAsync(existingOwner.Id);
                 changedOwner.Should().BeEquivalentTo(newOwner);
         }
+    }
+    
+    //TODO: Add the exception path
+
+    [Fact]
+    public async Task DeleteAsync_WhenOwnerExistsAndNotMarkedToDelete_MarksOwnerAsDeleted()
+    {
+        //Arrange
+        var owner = CreateOwner();
+
+        await using (var dbContext = GetInMemoryDbContext())
+        {
+            var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+            var repository = new OwnerRepository(dbContext, fCbf);
+
+            await dbContext.AddAsync(owner);
+            await dbContext.SaveChangesAsync();
+            
+            //Act
+            await repository.DeleteAsync(owner.Id);
+        }
+
+
+        //Assert
+        await using (var dbContext = GetInMemoryDbContext())
+        {
+            var markedOwner = await dbContext.PetOwners.FindAsync(owner.Id);
+            markedOwner?.IsMarkedToDelete.Should().Be(true);
+        }
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WhenOwnerExistsAndMarkedToDelete_AndConfirmDeleteIsTrue_RemovesOwner()
+    {
+        //Arrange
+        var owner = CreateOwner(Guid.NewGuid(), "ボリス", 1234, 56789, true);
+        
+        var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+        await using (var dbContext = GetInMemoryDbContext())
+        {
+            var repository = new OwnerRepository(dbContext, fCbf);
+
+            await dbContext.AddAsync(owner);
+            await dbContext.SaveChangesAsync();
+            
+            //Act
+            await repository.DeleteAsync(owner.Id, confirmDelete: true);
+        }
+
+        //Assert
+        await using (var dbContext = GetInMemoryDbContext())
+        {
+            var markedOwner = await dbContext.PetOwners.FindAsync(owner.Id);
+            markedOwner.Should().Be(null);
+        }
+    }
+    
+    //TODO: Add the exception path
+
+    [Fact]
+    public async Task AddPetAsync_AddsPetToOwner()
+    {
+        
+    }
+
+    [Fact]
+    public async Task RemovePetAsync_RemovesPetFromOwner()
+    {
+        
     }
     
     private static PostgresDbContext GetInMemoryDbContext()

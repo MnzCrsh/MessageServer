@@ -121,16 +121,28 @@ public class OwnerRepository : IOwnerRepository
     /// Marks owner to delete
     /// </summary>
     /// <param name="id">ID of the Owner to delete</param>
+    /// <param name="confirmDelete">Final confirmation before removing owner</param>
     /// <exception cref="ArgumentNullException">Throws if owner dont exist in DB</exception>
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, bool confirmDelete = false)
     {
         var owner = await _dbContext.PetOwners.FindAsync(id);
-        if (owner is null)
-        {
-            throw new ArgumentNullException($"Owner with ID: {id} does not exist");
-        }
+        if (owner is null) throw new ArgumentNullException
+            ($"Owner with ID: {id} does not exist");
 
-        owner.IsMarkedToDelete = true;
+        if (!owner.IsMarkedToDelete) owner.IsMarkedToDelete = true;
+        else
+        {
+            if (confirmDelete)
+            {
+                _dbContext.Remove(owner);
+            }
+            else
+            {
+                throw new InvalidOperationException
+                    ("Confirmation was not received");
+            }
+        }
+        
         await _dbContext.SaveChangesAsync();
     }
     
@@ -140,7 +152,7 @@ public class OwnerRepository : IOwnerRepository
     /// <param name="id">ID of the Owner to delete</param>
     /// <param name="deleteCallback">Delete delegate</param>
     /// <exception cref="ArgumentNullException">Throws if owner dont exist in DB</exception>
-    public async Task DeleteAsync(Guid id, Action<Owner>? deleteCallback)
+    public async Task DeleteAsync(Guid id,Action<Owner>? deleteCallback)
     {
         var owner = await _dbContext.PetOwners.FindAsync(id);
         if (owner is null)

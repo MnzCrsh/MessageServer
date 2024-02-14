@@ -35,6 +35,7 @@ public interface IOwnerRepository
     /// Delete owner from DB
     /// </summary>
     /// <param name="id">ID of the Owner to delete</param>
+    /// <param name="confirmDelete">Final confirmation before removing owner</param>
     /// <returns></returns>
-    public Task DeleteAsync(Guid id);
+    public Task DeleteAsync(Guid id, bool confirmDelete = false);
 }

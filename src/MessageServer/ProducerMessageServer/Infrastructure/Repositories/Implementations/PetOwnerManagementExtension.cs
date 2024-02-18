@@ -6,48 +6,32 @@ namespace MessageServer.Infrastructure.Repositories.Implementations;
 
 public static class PetOwnerManagementExtension
 {
+
+    //HACK: Static events. Maybe should try the library for weak events or should use the weak references.
+    public static event EventHandler<OwnerEventArgs>? PetAdded;
+    public static event EventHandler<OwnerEventArgs>? PetRemoved;
+    
     /// <summary>
     /// 
     /// </summary>
     /// <param name="ownerRepo"></param>
-    /// <param name="petRepo"></param>
-    /// <param name="ownerId"></param>
-    /// <param name="petId"></param>
-    public static async Task AddPetAsync(this IOwnerRepository ownerRepo,
-                                              IPetRepository petRepo,Guid ownerId, int petId)
+    /// <param name="existingPet"></param>
+    /// <param name="existingOwner"></param>
+    public static void AddPet(this IOwnerRepository ownerRepo, Pet existingPet,Owner existingOwner)
     {
-        var (owner,pet) = await GetOwnerAndPetAsync(ownerRepo, petRepo, ownerId, petId);
-        owner.OwnedPets?.Add(pet);
+        existingOwner.OwnedPets?.Add(existingPet);
+        PetAdded?.Invoke(ownerRepo, new OwnerEventArgs(existingOwner));
     }
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="ownerRepo"></param>
-    /// <param name="petRepo"></param>
-    /// <param name="ownerId"></param>
-    /// <param name="petId"></param>
-    public static async Task RemovePetAsync(this IOwnerRepository ownerRepo,
-                                                 IPetRepository petRepo,Guid ownerId, int petId)
+    /// <param name="existingPet"></param>
+    /// <param name="existingOwner"></param>
+    public static void RemovePet(this IOwnerRepository ownerRepo, Pet existingPet, Owner existingOwner)
     {
-        var (owner,pet) = await GetOwnerAndPetAsync(ownerRepo, petRepo, ownerId, petId);
-        owner.OwnedPets?.Remove(pet);
-    }
-    
-    //HACK:
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="ownerRepo"></param>
-    /// <param name="petRepo"></param>
-    /// <param name="ownerId"></param>
-    /// <param name="petId"></param>
-    /// <returns></returns>
-    private static async Task<(Owner, Pet)> GetOwnerAndPetAsync(
-        this IOwnerRepository ownerRepo, IPetRepository petRepo, Guid ownerId, int petId)
-    {
-        var owner = await ownerRepo.GetAsync(ownerId);
-        var pet = await petRepo.GetAsync(petId);
-        return (owner, pet);
+        existingOwner.OwnedPets?.Remove(existingPet);
+        PetRemoved?.Invoke(ownerRepo, new OwnerEventArgs(existingOwner));
     }
 }

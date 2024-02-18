@@ -5,17 +5,39 @@ using Microsoft.EntityFrameworkCore;
 namespace MessageServer.Infrastructure.Repositories.Implementations;
 
 
-public class OwnerRepository : IOwnerRepository
+public class OwnerRepository : IOwnerRepository, IDisposable
 {
     private readonly PostgresDbContext _dbContext;
     private readonly CircuitBreaker _circuitBreaker;
+    private readonly IOwnerEventStrategy _ownerEventStrategy;
     public OwnerRepository(PostgresDbContext dbContext,
-        CircuitBreaker.CircuitBreakerFactory circuitBreakerFactory)
+        CircuitBreaker.CircuitBreakerFactory circuitBreakerFactory,
+        IOwnerEventStrategy ownerEventStrategy)
     {
         _dbContext = dbContext;
+        _ownerEventStrategy = ownerEventStrategy;
         _circuitBreaker = circuitBreakerFactory(TimeSpan.FromSeconds(5));
+
+        PetOwnerManagementExtension.PetAdded += async (sender, args) =>
+        {
+            if (args.Owner != null) await HandlePetAdded(args.Owner);
+        };
+
+        PetOwnerManagementExtension.PetRemoved += async (sender, args) =>
+        {
+            if (args.Owner != null) await HandlePetRemoved(args.Owner);
+        };
     }
-    
+
+    private async Task HandlePetAdded(Owner owner)
+    {
+        await _ownerEventStrategy.HandlePetAdded(owner);
+    }
+
+    private async Task HandlePetRemoved(Owner owner)
+    {
+        await _ownerEventStrategy.HandlePetRemoved(owner);
+    } 
     
     /// <summary>
     /// Asynchronously creates new Owner in database. Adds to database with DbContext
@@ -188,5 +210,11 @@ public class OwnerRepository : IOwnerRepository
         Console.WriteLine(entityEntry.State == EntityState.Modified
             ? "Owner data has been changed."
             : "Owner data wasn't changed.");
+    }
+
+    public void Dispose()
+    {
+        // PetOwnerManagementExtension.PetAdded -= HandlePetAdded;
+        // PetOwnerManagementExtension.PetRemoved -= HandlePetRemoved;
     }
 }

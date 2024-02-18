@@ -11,9 +11,10 @@ public class DiContainerModule : Module
     {
         builder.RegisterType<OwnerRepository>().As<IOwnerRepository>().InstancePerLifetimeScope();
         builder.RegisterType<PetRepository>().As<IPetRepository>().InstancePerLifetimeScope();
+        builder.RegisterType<OwnerEventStrategy>().As<IOwnerEventStrategy>().InstancePerLifetimeScope();
 
         
-        //TODO: Add comments
+        //Delegate factory
         builder.RegisterType<CircuitBreaker>().AsSelf();
 
         builder.Register<Func<TimeSpan, CircuitBreaker>>(c =>

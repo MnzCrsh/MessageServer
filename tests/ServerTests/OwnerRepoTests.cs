@@ -16,11 +16,12 @@ public class OwnerRepoTests
         //Arrange
         var fOwner = CreateOwner();
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+        var fStrategy = A.Fake<IOwnerEventStrategy>();
 
         Guid result;
         await using (var dbContext = GetInMemoryDbContext())
         {
-            var repository = new OwnerRepository(dbContext, fCbf);
+            var repository = new OwnerRepository(dbContext, fCbf,fStrategy);
 
             //Act
             result = await repository.CreateAsync(fOwner);
@@ -40,14 +41,15 @@ public class OwnerRepoTests
         //Arrange
         var expectedOwner = CreateOwner();
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
-
+        var fStrategy = A.Fake<IOwnerEventStrategy>();
+        
         
         await using var dbContext = GetInMemoryDbContext();
         
         await dbContext.AddAsync(expectedOwner);
         await dbContext.SaveChangesAsync();
 
-        var repository = new OwnerRepository(dbContext, fCbf);
+        var repository = new OwnerRepository(dbContext, fCbf,fStrategy);
         
         //Act
         var result = await repository.GetAsync(expectedOwner.Id);
@@ -63,9 +65,10 @@ public class OwnerRepoTests
     {
         //Arrange
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
-
+        var fStrategy = A.Fake<IOwnerEventStrategy>();
+        
         await using var dbContext = GetInMemoryDbContext();
-        var repository = new OwnerRepository(dbContext, fCbf);
+        var repository = new OwnerRepository(dbContext, fCbf,fStrategy);
 
         List<Owner> expectedOwners = new();
         for (int i = 0; i < 5; i++)
@@ -96,13 +99,14 @@ public class OwnerRepoTests
     {
         //Arrange
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+        var fStrategy = A.Fake<IOwnerEventStrategy>();
 
         var existingOwner = CreateOwner();
         var newOwner = CreateOwner(existingOwner.Id,"newName", 3456, 789483, false);
 
         await using (var dbContext = GetInMemoryDbContext())
         {
-            var repository = new OwnerRepository(dbContext, fCbf);
+            var repository = new OwnerRepository(dbContext, fCbf,fStrategy);
             await dbContext.AddAsync(existingOwner);
             await dbContext.SaveChangesAsync();
             
@@ -129,7 +133,9 @@ public class OwnerRepoTests
         await using (var dbContext = GetInMemoryDbContext())
         {
             var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
-            var repository = new OwnerRepository(dbContext, fCbf);
+            var fStrategy = A.Fake<IOwnerEventStrategy>();
+            
+            var repository = new OwnerRepository(dbContext, fCbf,fStrategy);
 
             await dbContext.AddAsync(owner);
             await dbContext.SaveChangesAsync();
@@ -154,9 +160,11 @@ public class OwnerRepoTests
         var owner = CreateOwner(Guid.NewGuid(), "ボリス", 1234, 56789, true);
         
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+        var fStrategy = A.Fake<IOwnerEventStrategy>();
+        
         await using (var dbContext = GetInMemoryDbContext())
         {
-            var repository = new OwnerRepository(dbContext, fCbf);
+            var repository = new OwnerRepository(dbContext, fCbf, fStrategy);
 
             await dbContext.AddAsync(owner);
             await dbContext.SaveChangesAsync();
@@ -175,17 +183,36 @@ public class OwnerRepoTests
     
     //TODO: Add the exception path
 
-    [Fact]
-    public async Task AddPetAsync_AddsPetToOwner()
-    {
-        
-    }
-
-    [Fact]
-    public async Task RemovePetAsync_RemovesPetFromOwner()
-    {
-        
-    }
+    // [Fact]
+    // public async Task AddPetAsync_AddsPetToOwner()
+    // {
+    //     //Arrange
+    //     var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+    //     var dbContext = GetInMemoryDbContext();
+    //     
+    //     var repository = new OwnerRepository(dbContext, fCbf);
+    //
+    //     //Act
+    //     await repository.AddPetAsync();
+    //
+    //     //Assert
+    //
+    // }
+    //
+    // [Fact]
+    // public async Task RemovePetAsync_RemovesPetFromOwner()
+    // {
+    //     //Arrange
+    //     var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+    //     var dbContext = GetInMemoryDbContext();
+    //     
+    //     var repository = new OwnerRepository(dbContext, fCbf);
+    //     
+    //     //Act
+    //     await repository.RemovePetAsync();
+    //
+    //     //Assert
+    // }
     
     private static PostgresDbContext GetInMemoryDbContext()
     {

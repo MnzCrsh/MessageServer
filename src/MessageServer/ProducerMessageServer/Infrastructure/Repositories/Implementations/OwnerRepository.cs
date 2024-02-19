@@ -18,25 +18,18 @@ public class OwnerRepository : IOwnerRepository, IDisposable
         _ownerEventStrategy = ownerEventStrategy;
         _circuitBreaker = circuitBreakerFactory(TimeSpan.FromSeconds(5));
 
-        PetOwnerManagementExtension.PetAdded += async (sender, args) =>
-        {
-            if (args.Owner != null) await HandlePetAdded(args.Owner);
-        };
-
-        PetOwnerManagementExtension.PetRemoved += async (sender, args) =>
-        {
-            if (args.Owner != null) await HandlePetRemoved(args.Owner);
-        };
+        PetOwnerManagementExtension.PetAdded +=  HandlePetAdded;
+        PetOwnerManagementExtension.PetRemoved += HandlePetRemoved;
     }
 
-    private async Task HandlePetAdded(Owner owner)
+    private async void HandlePetAdded(object? _, OwnerEventArgs args)
     {
-        await _ownerEventStrategy.HandlePetAdded(owner);
+        if (args.Owner != null) await _ownerEventStrategy.HandlePetAdded(args.Owner);
     }
 
-    private async Task HandlePetRemoved(Owner owner)
+    private async void HandlePetRemoved(object? _, OwnerEventArgs args)
     {
-        await _ownerEventStrategy.HandlePetRemoved(owner);
+        if (args.Owner != null) await _ownerEventStrategy.HandlePetRemoved(args.Owner);
     } 
     
     /// <summary>
@@ -214,7 +207,7 @@ public class OwnerRepository : IOwnerRepository, IDisposable
 
     public void Dispose()
     {
-        // PetOwnerManagementExtension.PetAdded -= HandlePetAdded;
-        // PetOwnerManagementExtension.PetRemoved -= HandlePetRemoved;
+        PetOwnerManagementExtension.PetAdded -= HandlePetAdded;
+        PetOwnerManagementExtension.PetRemoved -= HandlePetRemoved;
     }
 }

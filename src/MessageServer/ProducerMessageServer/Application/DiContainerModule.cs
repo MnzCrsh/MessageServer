@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using MessageServer.Infrastructure;
+using MessageServer.Infrastructure.Repositories.Abstractions;
 using MessageServer.Infrastructure.Repositories.Implementations;
-using MessageServer.Infrastructure.Repositories.Interfaces;
 
 namespace MessageServer.Application;
 

@@ -1,5 +1,4 @@
-﻿using MessageServer.Infrastructure;
-using MessageServer.Infrastructure.Repositories;
+﻿using MessageServer.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace MessageServer.Application;

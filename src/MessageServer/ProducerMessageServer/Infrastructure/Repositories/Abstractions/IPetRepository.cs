@@ -1,6 +1,6 @@
 ﻿using MessageServer.Domain;
 
-namespace MessageServer.Infrastructure.Repositories.Interfaces;
+namespace MessageServer.Infrastructure.Repositories.Abstractions;
 
 public interface IPetRepository
 {

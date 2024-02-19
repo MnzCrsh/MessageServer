@@ -1,7 +1,7 @@
 ﻿using MessageServer.Domain;
-using MessageServer.Infrastructure.Repositories;
+using MessageServer.Infrastructure.Repositories.Abstractions;
 
-namespace MessageServer.Infrastructure;
+namespace MessageServer.Infrastructure.Repositories.Implementations;
 
 public class OwnerEventStrategy : IOwnerEventStrategy
 {

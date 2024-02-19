@@ -1,7 +1,7 @@
 ﻿using FakeItEasy;
 using FluentValidation;
 using MessageServer.Domain;
-using MessageServer.Infrastructure.Repositories.Interfaces;
+using MessageServer.Infrastructure.Repositories.Abstractions;
 
 namespace ServerTests;
 

@@ -1,6 +1,6 @@
 ﻿using MessageServer.Domain;
 
-namespace MessageServer.Infrastructure;
+namespace MessageServer.Infrastructure.Repositories.Abstractions;
 
 public interface IOwnerEventStrategy
 {

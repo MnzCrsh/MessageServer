@@ -1,5 +1,5 @@
 ﻿using MessageServer.Domain;
-using MessageServer.Infrastructure.Repositories.Interfaces;
+using MessageServer.Infrastructure.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace MessageServer.Infrastructure.Repositories.Implementations;
@@ -18,8 +18,8 @@ public class OwnerRepository : IOwnerRepository, IDisposable
         _ownerEventStrategy = ownerEventStrategy;
         _circuitBreaker = circuitBreakerFactory(TimeSpan.FromSeconds(5));
 
-        PetOwnerManagementExtension.PetAdded +=  HandlePetAdded;
-        PetOwnerManagementExtension.PetRemoved += HandlePetRemoved;
+        OwnerManagementExtension.OnPetAdded +=  HandlePetAdded;
+        OwnerManagementExtension.OnPetRemoved += HandlePetRemoved;
     }
 
     private async void HandlePetAdded(object? _, OwnerEventArgs args)
@@ -207,7 +207,7 @@ public class OwnerRepository : IOwnerRepository, IDisposable
 
     public void Dispose()
     {
-        PetOwnerManagementExtension.PetAdded -= HandlePetAdded;
-        PetOwnerManagementExtension.PetRemoved -= HandlePetRemoved;
+        OwnerManagementExtension.OnPetAdded -= HandlePetAdded;
+        OwnerManagementExtension.OnPetRemoved -= HandlePetRemoved;
     }
 }

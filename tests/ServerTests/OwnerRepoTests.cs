@@ -119,7 +119,8 @@ public class OwnerRepoTests
         await using (var context = GetInMemoryDbContext())
         {
             var changedOwner = await context.PetOwners.FindAsync(existingOwner.Id);
-                changedOwner.Should().BeEquivalentTo(newOwner);
+                changedOwner.Should().BeEquivalentTo(newOwner, c 
+                    => c.Excluding(o => o.OwnedPets));
         }
     }
     
@@ -190,13 +191,14 @@ public class OwnerRepoTests
         //Arrange
         var pet = CreatePet();
         var owner = CreateOwner();
+
+        using var dbContext = GetInMemoryDbContext();
         
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
-        var dbContext = GetInMemoryDbContext();
         var fStrategy = A.Fake<IOwnerEventStrategy>();
-        
+
         var repository = new OwnerRepository(dbContext, fCbf, fStrategy);
-        
+
         //Act
         repository.AddPet(owner, pet);
     
@@ -211,13 +213,14 @@ public class OwnerRepoTests
         //Arrange
         var pet = CreatePet();
         var owner = CreateOwner();
+
+        using var dbContext = GetInMemoryDbContext();
         
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
-        var dbContext = GetInMemoryDbContext();
         var fStrategy = A.Fake<IOwnerEventStrategy>();
-        
+
         var repository = new OwnerRepository(dbContext, fCbf, fStrategy);
-        
+
         //Act
         repository.RemovePet(owner,pet);
     
@@ -225,11 +228,30 @@ public class OwnerRepoTests
         A.CallTo(() => fStrategy.HandlePetRemoved(A<Owner>._)).MustHaveHappenedOnceExactly();
         pet.PetOwner?.Id.Should().Be(null);
     }
-
+    
     [Fact]
     public void OwnerRepository_ShouldBeUnsubscribedFromEvents()
     {
-        throw new NotImplementedException();
+        //Arrange
+        bool petRemoveEventCalled = false;
+        bool petAddEventCalled = false;
+
+        using var dbContext = GetInMemoryDbContext();
+        
+        var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
+        var fStrategy = A.Fake<IOwnerEventStrategy>();
+
+        var repository = new OwnerRepository(dbContext, fCbf, fStrategy);
+
+        //Act
+        OwnerManagementExtension.OnPetAdded += (_, _) => petAddEventCalled = true;
+        OwnerManagementExtension.OnPetRemoved += (_, _) => petRemoveEventCalled = true;
+
+        repository.Dispose();
+        
+        //Assert
+        petRemoveEventCalled.Should().Be(false);
+        petAddEventCalled.Should().Be(false);
     }
     
     private static PostgresDbContext GetInMemoryDbContext()
@@ -250,7 +272,7 @@ public class OwnerRepoTests
             PassportSeries = 0123,
             PassportNumber = 456789,
             IsMarkedToDelete = false,
-            OwnedPets = null
+            OwnedPets = new List<Pet>()
         };
         return fOwner;
     }

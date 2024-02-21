@@ -10,5 +10,6 @@ public class PostgresDbContext : DbContext
         
     }
 
-    public virtual DbSet<Owner> PetOwners { get; set; } = null!;
+    public DbSet<Owner>? PetOwners { get; set; }
+    public DbSet<Pet>? Pets { get; set; }
 }

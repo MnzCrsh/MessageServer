@@ -1,5 +1,6 @@
 ﻿using MessageServer.Domain;
 using MessageServer.Infrastructure.Repositories.Abstractions;
+using Microsoft.EntityFrameworkCore;
 
 namespace MessageServer.Infrastructure.Repositories.Implementations;
 
@@ -20,19 +21,32 @@ public class PetRepository : IPetRepository
             PetAge = pet.PetAge,
             IsMarkedToDelete = false
         };
-        _dbContext.Add(newPet);
+        await _dbContext.AddAsync(newPet);
         await _dbContext.SaveChangesAsync();
         return newPet.Id;
     }
 
-    public Task<Pet> GetAsync(int id)
+    public async Task<Pet?> GetAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var result = await (_dbContext.Pets ?? throw new InvalidOperationException())
+            .Where(p => !p.IsMarkedToDelete)
+            .Select(p => p)
+            .SingleOrDefaultAsync();
+        return result;
     }
 
-    public Task<IEnumerable<PetDto>> GetAllAsync()
+    public async Task<IEnumerable<PetDto>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        var result = await (_dbContext.Pets ?? throw new InvalidOperationException())
+            .Where(p => !p.IsMarkedToDelete)
+            .Select(p => new PetDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                PetOwner = new OwnerDto{Id = p.PetOwner!.Id, Name = p.PetOwner.Name}
+            })
+            .ToListAsync();
+        return result;
     }
 
     public Task UpdateAsync(Pet pet)
@@ -40,7 +54,7 @@ public class PetRepository : IPetRepository
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(int id)
+    public Task DeleteAsync(Guid id, bool confirmDelete = false)
     {
         throw new NotImplementedException();
     }

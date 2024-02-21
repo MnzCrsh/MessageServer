@@ -31,9 +31,14 @@ public class OwnerController : ControllerBase
     [Route("[action]/{id:guid}")]
     public async Task<IActionResult> GetOwnerAsync(Guid id)
     {
-        await _ownerRepository.GetAsync(id);
-        //TODO: Map Owner to Owner DTO
-        return Ok();
+        var result = await _ownerRepository.GetAsync(id);
+        var resultDto = new OwnerDto
+        {
+            Id = result.Id,
+            Name = result.Name,
+        };
+        
+        return Ok(resultDto);
     }
 
     [HttpGet]
@@ -60,20 +65,30 @@ public class OwnerController : ControllerBase
         return Ok();
     }
 
-    // [HttpPost]
-    // [Route("[action]/{owner}/{pet}")]
-    // public async Task<IActionResult> AddPetToOwnerAsync(Guid ownerId, Guid petId)
-    // {
-    //     var owner = await _ownerRepository.GetAsync(ownerId);
-    //     var pet = _petRepository.GetAsync(petId);
-    //     
-    //     _ownerRepository.AddPet(owner, pet);
-    // }
-    //
-    // [HttpPost]
-    // [Route("[action]/{owner}/{pet}")]
-    // public void RemovePetFromOwner(Owner owner, Pet pet)
-    // {
-    //     _ownerRepository.RemovePet(owner, pet);
-    // }
+    [HttpPost]
+    [Route("[action]/{ownerId:guid}/{petId:guid}")]
+    public async Task<IActionResult> AddPetToOwnerAsync(Guid ownerId, Guid petId)
+    {
+        var owner = await _ownerRepository.GetAsync(ownerId);
+        var pet = await _petRepository.GetAsync(petId);
+
+        if (pet == null) return NotFound(petId);
+        
+        _ownerRepository.AddPet(owner, pet);
+        return Ok();
+    }
+    
+    [HttpPost]
+    [Route("[action]/{ownerId:guid}/{petId:guid}")]
+    public async Task<IActionResult> RemovePetFromOwner(Guid ownerId, Guid petId)
+    {
+        var owner = await _ownerRepository.GetAsync(ownerId);
+        var pet = await _petRepository.GetAsync(petId);
+
+        if (pet == null) return NotFound(petId);
+        
+        _ownerRepository.RemovePet(owner, pet);
+        return Ok();
+
+    }
 }

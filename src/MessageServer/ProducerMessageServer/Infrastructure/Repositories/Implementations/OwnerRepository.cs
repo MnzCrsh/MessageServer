@@ -111,26 +111,26 @@ public class OwnerRepository : IOwnerRepository, IDisposable
         await _dbContext.SaveChangesAsync();
     }
     
-    /// <summary>
-    /// Asynchronously updates OLD Owner data to the NEW Owner data
-    /// </summary>
-    /// <param name="newOwnerData">New Owner data with the same ID</param>
-    /// <param name="updateCallback">Update delegate</param>
-    /// <exception cref="ArgumentNullException">Throws if owner with such ID don't exist in DB</exception>
-    public async Task UpdateAsync(Owner newOwnerData, Action<Owner, Owner>? updateCallback)
-    {
-        var oldOwnerData = await _dbContext.PetOwners
-            .FirstOrDefaultAsync(o => o.Id.Equals(newOwnerData.Id));
-        
-        if (oldOwnerData is null)
-        {
-            throw new ArgumentNullException($"Cant find owner with ID: {newOwnerData.Id}");
-        }
-        
-        _circuitBreaker.Execute(()=>updateCallback?.Invoke(oldOwnerData,newOwnerData));
-
-        await _dbContext.SaveChangesAsync();
-    }
+    // /// <summary>
+    // /// Asynchronously updates OLD Owner data to the NEW Owner data
+    // /// </summary>
+    // /// <param name="newOwnerData">New Owner data with the same ID</param>
+    // /// <param name="updateCallback">Update delegate</param>
+    // /// <exception cref="ArgumentNullException">Throws if owner with such ID don't exist in DB</exception>
+    // public async Task UpdateAsync(Owner newOwnerData, Action<Owner, Owner>? updateCallback)
+    // {
+    //     var oldOwnerData = await _dbContext.PetOwners
+    //         .FirstOrDefaultAsync(o => o.Id.Equals(newOwnerData.Id));
+    //     
+    //     if (oldOwnerData is null)
+    //     {
+    //         throw new ArgumentNullException($"Cant find owner with ID: {newOwnerData.Id}");
+    //     }
+    //     
+    //     _circuitBreaker.Execute(()=>updateCallback?.Invoke(oldOwnerData,newOwnerData));
+    //
+    //     await _dbContext.SaveChangesAsync();
+    // }
 
     /// <summary>
     /// Marks owner to delete
@@ -161,23 +161,23 @@ public class OwnerRepository : IOwnerRepository, IDisposable
         await _dbContext.SaveChangesAsync();
     }
     
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="id">ID of the Owner to delete</param>
-    /// <param name="deleteCallback">Delete delegate</param>
-    /// <exception cref="ArgumentNullException">Throws if owner dont exist in DB</exception>
-    public async Task DeleteAsync(Guid id,Action<Owner>? deleteCallback)
-    {
-        var owner = await _dbContext.PetOwners.FindAsync(id);
-        if (owner is null)
-        {
-            throw new ArgumentNullException($"Owner with ID: {id} does not exist");
-        }
-
-        _circuitBreaker.Execute(()=> deleteCallback?.Invoke(owner));
-        await _dbContext.SaveChangesAsync();
-    }   
+    // /// <summary>
+    // /// 
+    // /// </summary>
+    // /// <param name="id">ID of the Owner to delete</param>
+    // /// <param name="deleteCallback">Delete delegate</param>
+    // /// <exception cref="ArgumentNullException">Throws if owner dont exist in DB</exception>
+    // public async Task DeleteAsync(Guid id,Action<Owner>? deleteCallback)
+    // {
+    //     var owner = await _dbContext.PetOwners.FindAsync(id);
+    //     if (owner is null)
+    //     {
+    //         throw new ArgumentNullException($"Owner with ID: {id} does not exist");
+    //     }
+    //
+    //     _circuitBreaker.Execute(()=> deleteCallback?.Invoke(owner));
+    //     await _dbContext.SaveChangesAsync();
+    // }   
     
 
     /// <summary>
@@ -198,7 +198,7 @@ public class OwnerRepository : IOwnerRepository, IDisposable
         
         // Get information about entity state
         var entityEntry = _dbContext.Entry(oldOwnerData);
-        
+
         // Check if entity has changed
         Console.WriteLine(entityEntry.State == EntityState.Modified
             ? "Owner data has been changed."

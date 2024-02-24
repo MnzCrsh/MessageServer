@@ -10,6 +10,6 @@ public class PostgresDbContext : DbContext
         
     }
 
-    public DbSet<Owner>? PetOwners { get; set; }
-    public DbSet<Pet>? Pets { get; set; }
+    public DbSet<Owner> PetOwners { get; set; }
+    public DbSet<Pet> Pets { get; set; }
 }

@@ -7,7 +7,7 @@ public class Pet
         [Required]
         public Guid Id               { get; set; }
     
-        public OwnerDto? PetOwner { get; set; }
+        public Owner? PetOwner { get; set; }
     
         public required string Name  { get; set; } = null!;
     

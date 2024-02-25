@@ -85,7 +85,7 @@ public class OwnerRepository : IOwnerRepository, IDisposable
                     { 
                         Id = pet.Id,
                         Name = pet.Name,
-                        PetOwner = pet.PetOwner 
+                        PetOwner = OwnerMapper.EntityToDto(pet.PetOwner) 
                     })
             }).ToListAsync();
         return owners;

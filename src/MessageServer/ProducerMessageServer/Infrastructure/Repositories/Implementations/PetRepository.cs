@@ -49,9 +49,15 @@ public class PetRepository : IPetRepository
         return result;
     }
 
-    public Task UpdateAsync(Pet pet)
+    public async Task UpdateAsync(Pet newPetData)
     {
-        throw new NotImplementedException();
+        var oldPetData = await _dbContext.Pets.FirstOrDefaultAsync(pet => pet.Id.Equals(newPetData.Id));
+        if (oldPetData is null)
+        {
+            throw new ArgumentNullException($"Cant find owner with ID: {newPetData.Id}");
+        }
+        
+        UpdatePetData(oldPetData, newPetData);
     }
 
     public Task DeleteAsync(Guid id, bool confirmDelete = false)
@@ -59,8 +65,13 @@ public class PetRepository : IPetRepository
         throw new NotImplementedException();
     }
 
-    private void UpdatePetData(Pet oldPetData, Pet newPetData)
+    private static void UpdatePetData(Pet oldPetData, Pet newPetData)
     {
-        
+        oldPetData.Name = newPetData.Name;
+        oldPetData.PetAge = newPetData.PetAge;
+        if (oldPetData.IsMarkedToDelete && newPetData.IsMarkedToDelete.Equals(false))
+        {
+            oldPetData.IsMarkedToDelete = newPetData.IsMarkedToDelete;
+        }
     }
 }

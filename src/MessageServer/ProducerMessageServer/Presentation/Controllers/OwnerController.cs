@@ -1,4 +1,5 @@
 ﻿using MessageServer.Domain;
+using MessageServer.Infrastructure;
 using MessageServer.Infrastructure.Repositories.Abstractions;
 using MessageServer.Infrastructure.Repositories.Implementations;
 using Microsoft.AspNetCore.Mvc;
@@ -32,11 +33,7 @@ public class OwnerController : ControllerBase
     public async Task<IActionResult> GetOwnerAsync(Guid id)
     {
         var result = await _ownerRepository.GetAsync(id);
-        var resultDto = new OwnerDto
-        {
-            Id = result.Id,
-            Name = result.Name,
-        };
+        var resultDto = OwnerMapper.EntityToDto(result);
         
         return Ok(resultDto);
     }

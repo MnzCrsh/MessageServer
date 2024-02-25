@@ -15,6 +15,7 @@ public static class PetMapper
         };
         return dto;
     } 
+    
     public static IEnumerable<PetDto> EntityToDto(IEnumerable<Pet>? pets)
     {
         return (pets ?? throw new ArgumentNullException(nameof(pets)))

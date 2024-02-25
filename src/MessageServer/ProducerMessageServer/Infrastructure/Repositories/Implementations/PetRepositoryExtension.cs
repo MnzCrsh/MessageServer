@@ -1,10 +1,11 @@
 ﻿using MessageServer.Domain;
+using MessageServer.Infrastructure.Repositories.Abstractions;
 
 namespace MessageServer.Infrastructure.Repositories.Implementations;
 
 public static class PetRepositoryExtension
 {
-    public static async Task<IEnumerable<PetDto>> GetPetsByOwnerAsync(this PetRepository repo,int ownerId)
+    public static Task<IEnumerable<PetDto>> GetPetsByOwnerAsync(this IPetRepository repo,int ownerId)
     {
         throw new NotImplementedException();
     }

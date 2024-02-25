@@ -67,7 +67,7 @@ public class OwnerRepository : IOwnerRepository, IDisposable
                             throw new InvalidOperationException($"{id} dont exist");
         return existingOwner;
     }
-
+   
     /// <summary>
     /// Asynchronously returns every owner from DB with linked pets
     /// </summary>
@@ -80,13 +80,14 @@ public class OwnerRepository : IOwnerRepository, IDisposable
             {
                 Id = o.Id,
                 Name = o.Name,
-                OwnedPets = o.OwnedPets!
+                OwnedPets = o.OwnedPets != null ? o.OwnedPets
+                    .Where(pet => pet.PetOwner != null)
                     .Select(pet => new PetDto
                     { 
                         Id = pet.Id,
                         Name = pet.Name,
-                        PetOwner = OwnerMapper.EntityToDto(pet.PetOwner) 
-                    })
+                        PetOwner = pet.PetOwner != null ? OwnerMapper.EntityToDto(pet.PetOwner) : null
+                    }): null
             }).ToListAsync();
         return owners;
     }

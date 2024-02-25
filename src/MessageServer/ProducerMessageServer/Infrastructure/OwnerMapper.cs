@@ -4,7 +4,12 @@ namespace MessageServer.Infrastructure;
 
 public static class OwnerMapper
 {
-    public static OwnerDto EntityToDto(Owner? owner)
+    /// <summary>
+    /// Maps single db entity to data transfer object
+    /// </summary>
+    /// <param name="owner">Owner data base entity</param>
+    /// <returns></returns>
+    public static OwnerDto EntityToDto(Owner owner)
     {
         var dto = new OwnerDto
         {
@@ -15,6 +20,11 @@ public static class OwnerMapper
         return dto;
     }
     
+    /// <summary>
+    /// Maps multiple db entities to data transfer objects
+    /// </summary>
+    /// <param name="owners">List of owners</param>
+    /// <returns></returns>
     public static IEnumerable<OwnerDto> EntityToDto(IEnumerable<Owner> owners)
     {
         var dto = owners.Select(owner => new OwnerDto

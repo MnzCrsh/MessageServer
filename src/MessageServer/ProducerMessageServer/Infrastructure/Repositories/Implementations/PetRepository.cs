@@ -60,9 +60,27 @@ public class PetRepository : IPetRepository
         UpdatePetData(oldPetData, newPetData);
     }
 
-    public Task DeleteAsync(Guid id, bool confirmDelete = false)
+    public async Task DeleteAsync(Guid id, bool confirmDelete = false)
     {
-        throw new NotImplementedException();
+        var pet = await _dbContext.Pets.FindAsync(id);
+        if (pet is null) throw new ArgumentNullException
+            ($"Pet with ID: {id} does not exist");
+        
+        if (!pet.IsMarkedToDelete) pet.IsMarkedToDelete = true;
+        else
+        {
+            if (confirmDelete)
+            {
+                _dbContext.Remove(pet);
+            }
+            else
+            {
+                throw new InvalidOperationException
+                    ("Confirmation was not received");
+            }
+        }
+        
+        await _dbContext.SaveChangesAsync();
     }
 
     private static void UpdatePetData(Pet oldPetData, Pet newPetData)

@@ -5,8 +5,9 @@ namespace MessageServer.Infrastructure.Repositories.Implementations;
 
 public static class PetRepositoryExtension
 {
-    public static Task<IEnumerable<PetDto>> GetPetsByOwnerAsync(this IPetRepository repo,int ownerId)
+    public static async Task<IEnumerable<PetDto>> GetPetsByOwnerAsync(this IPetRepository repo,Guid ownerId)
     {
-        throw new NotImplementedException();
+        var pets = await repo.GetAllAsync();
+        return pets.Where(pet => pet.PetOwner != null && pet.PetOwner.Id.Equals(ownerId)).Select(p => p).ToList();
     }
 }

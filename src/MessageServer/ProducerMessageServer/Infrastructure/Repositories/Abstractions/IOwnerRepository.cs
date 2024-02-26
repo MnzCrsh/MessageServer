@@ -22,7 +22,7 @@ public interface IOwnerRepository
     /// Asynchronously returns every owner from DB with linked pets
     /// </summary>
     /// <returns>IEnumerable with every Owner</returns>
-    public Task<IEnumerable<OwnerDto>> GetAllAsync();
+    public Task<IEnumerable<OwnerDto>> GetAllAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Asynchronously updates OLD Owner data to the NEW Owner data

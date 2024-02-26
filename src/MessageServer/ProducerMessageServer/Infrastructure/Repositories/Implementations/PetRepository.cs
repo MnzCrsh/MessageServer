@@ -35,7 +35,7 @@ public class PetRepository : IPetRepository
         return result;
     }
 
-    public async Task<IEnumerable<PetDto>> GetAllAsync()
+    public async Task<IEnumerable<PetDto>> GetAllAsync(CancellationToken ct = default)
     {
         var result = await (_dbContext.Pets ?? throw new InvalidOperationException())
             .Where(p => !p.IsMarkedToDelete)
@@ -45,7 +45,7 @@ public class PetRepository : IPetRepository
                 Name = p.Name,
                 PetOwner = new OwnerDto{Id = p.PetOwner!.Id, Name = p.PetOwner.Name}
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken: ct);
         return result;
     }
 

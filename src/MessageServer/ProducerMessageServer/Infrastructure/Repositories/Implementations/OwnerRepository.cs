@@ -72,7 +72,7 @@ public class OwnerRepository : IOwnerRepository, IDisposable
     /// Asynchronously returns every owner from DB with linked pets
     /// </summary>
     /// <returns>Owners IEnumerable</returns>
-    public async Task<IEnumerable<OwnerDto>> GetAllAsync()
+    public async Task<IEnumerable<OwnerDto>> GetAllAsync(CancellationToken ct = default)
     {
         var owners = await _dbContext.PetOwners
             .Where(o => !o.IsMarkedToDelete)
@@ -88,7 +88,7 @@ public class OwnerRepository : IOwnerRepository, IDisposable
                         Name = pet.Name,
                         PetOwner = pet.PetOwner != null ? OwnerMapper.EntityToDto(pet.PetOwner) : null
                     }): null
-            }).ToListAsync();
+            }).ToListAsync(cancellationToken: ct);
         return owners;
     }
 

@@ -22,7 +22,7 @@ public interface IPetRepository
     /// 
     /// </summary>
     /// <returns></returns>
-    public Task<IEnumerable<PetDto>> GetAllAsync();
+    public Task<IEnumerable<PetDto>> GetAllAsync(CancellationToken ct = default);
     
     /// <summary>
     /// 

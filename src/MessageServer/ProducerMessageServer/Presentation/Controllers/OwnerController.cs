@@ -2,12 +2,13 @@
 using MessageServer.Infrastructure;
 using MessageServer.Infrastructure.Repositories.Abstractions;
 using MessageServer.Infrastructure.Repositories.Implementations;
+using MessageServer.Presentation.ControllerFilters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessageServer.Presentation.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
+[ApiController, ExceptionInterceptor]
+[Route("api/[controller]/[action]")]
 public class OwnerController : ControllerBase
 {
     private readonly IOwnerRepository _ownerRepository;
@@ -21,15 +22,15 @@ public class OwnerController : ControllerBase
     }
 
     [HttpPost]
-    [Route("[action]/{owner}")]
-    public async Task<IActionResult> CreateNewOwnerAsync(Owner owner)
+    [Route("{owner}")]
+    public async Task<IActionResult> CreateOwnerAsync(Owner owner)
     {
         var result = await _ownerRepository.CreateAsync(owner);
         return Ok(result);
     }
 
     [HttpGet]
-    [Route("[action]/{id:guid}")]
+    [Route("{id:guid}")]
     public async Task<IActionResult> GetOwnerAsync(Guid id)
     {
         var result = await _ownerRepository.GetAsync(id);
@@ -39,7 +40,7 @@ public class OwnerController : ControllerBase
     }
 
     [HttpGet]
-    [Route("[action]")]
+    [Route("")]
     public async Task<IActionResult> GetOwnersListAsync()
     {
         var result = await _ownerRepository.GetAllAsync();
@@ -47,7 +48,7 @@ public class OwnerController : ControllerBase
     }
 
     [HttpPost]
-    [Route("[action]/{owner}")]
+    [Route("{owner}")]
     public async Task<IActionResult> UpdateOwnerAsync(Owner owner)
     {
         await _ownerRepository.UpdateAsync(owner);
@@ -55,7 +56,7 @@ public class OwnerController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("[action]/{id:guid}/{deleteConfirmation:bool}")]
+    [Route("{id:guid}/{deleteConfirmation:bool}")]
     public async Task<IActionResult> DeleteOwnerAsync(Guid id, bool deleteConfirmation)
     {
         await _ownerRepository.DeleteAsync(id, deleteConfirmation);
@@ -63,7 +64,7 @@ public class OwnerController : ControllerBase
     }
 
     [HttpPost]
-    [Route("[action]/{ownerId:guid}/{petId:guid}")]
+    [Route("{ownerId:guid}/{petId:guid}")]
     public async Task<IActionResult> AddPetToOwnerAsync(Guid ownerId, Guid petId)
     {
         var owner = await _ownerRepository.GetAsync(ownerId);
@@ -76,7 +77,7 @@ public class OwnerController : ControllerBase
     }
     
     [HttpPost]
-    [Route("[action]/{ownerId:guid}/{petId:guid}")]
+    [Route("{ownerId:guid}/{petId:guid}")]
     public async Task<IActionResult> RemovePetFromOwner(Guid ownerId, Guid petId)
     {
         var owner = await _ownerRepository.GetAsync(ownerId);

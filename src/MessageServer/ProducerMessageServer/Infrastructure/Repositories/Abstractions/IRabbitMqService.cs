@@ -1,4 +1,4 @@
-﻿namespace MessageServer.Application;
+﻿namespace MessageServer.Infrastructure.Repositories.Abstractions;
 
 public interface IRabbitMqService
 {

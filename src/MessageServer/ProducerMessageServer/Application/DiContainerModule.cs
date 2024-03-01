@@ -12,6 +12,7 @@ public class DiContainerModule : Module
         builder.RegisterType<OwnerRepository>().As<IOwnerRepository>().InstancePerLifetimeScope();
         builder.RegisterType<PetRepository>().As<IPetRepository>().InstancePerLifetimeScope();
         builder.RegisterType<OwnerEventStrategy>().As<IOwnerEventStrategy>().InstancePerLifetimeScope();
+        builder.RegisterType<RabbitMqService>().As<IRabbitMqService>().InstancePerLifetimeScope();
 
         
         //Delegate factory

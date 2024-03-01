@@ -8,10 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.RunPostgresDb();
-builder.RunServices();
-
-
-var app = builder.Build();
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
@@ -20,6 +16,13 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
     containerBuilder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 } );
 
+builder.RunServices();
+
+
+var app = builder.Build();
+
+
+app.UseHsts();
 
 app.UseSwagger();
 app.UseSwaggerUI();

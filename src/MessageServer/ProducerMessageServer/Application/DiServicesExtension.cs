@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+
 namespace MessageServer.Application;
 
 public static class DiServicesExtension
@@ -8,10 +9,10 @@ public static class DiServicesExtension
         var services = builder.Services;
         
         
-        services.AddControllers().AddNewtonsoftJson();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddValidatorsFromAssemblyContaining<Program>();
+        services.AddControllers().AddNewtonsoftJson();
         
         services.AddHsts(options =>
         {

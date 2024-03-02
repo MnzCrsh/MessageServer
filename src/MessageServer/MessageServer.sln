@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerTests", "..\..\tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsumerMessageServer", "..\ConsumerMessageServer\ConsumerMessageServer.csproj", "{EF83B651-4F6A-4F6A-ACDE-F357A98F10AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsumerServerTests", "..\..\tests\ConsumerServerTests\ConsumerServerTests.csproj", "{8D3D411F-75CF-4ADB-B037-248F8D21184B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{EF83B651-4F6A-4F6A-ACDE-F357A98F10AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF83B651-4F6A-4F6A-ACDE-F357A98F10AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF83B651-4F6A-4F6A-ACDE-F357A98F10AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D3D411F-75CF-4ADB-B037-248F8D21184B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D3D411F-75CF-4ADB-B037-248F8D21184B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D3D411F-75CF-4ADB-B037-248F8D21184B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D3D411F-75CF-4ADB-B037-248F8D21184B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

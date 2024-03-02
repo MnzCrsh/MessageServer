@@ -16,7 +16,7 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
     containerBuilder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 } );
 
-builder.RunServices();
+builder.Services.RunServices();
 
 
 var app = builder.Build();

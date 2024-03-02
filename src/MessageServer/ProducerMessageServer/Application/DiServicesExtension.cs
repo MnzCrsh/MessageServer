@@ -4,11 +4,8 @@ namespace MessageServer.Application;
 
 public static class DiServicesExtension
 {
-    public static void RunServices(this WebApplicationBuilder builder)
+    public static void RunServices(this IServiceCollection services)
     {
-        var services = builder.Services;
-        
-        
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddValidatorsFromAssemblyContaining<Program>();

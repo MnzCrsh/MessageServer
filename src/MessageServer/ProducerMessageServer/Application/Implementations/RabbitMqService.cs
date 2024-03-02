@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using System.Text.Json;
-using MessageServer.Infrastructure.Repositories.Abstractions;
+using MessageServer.Application.Abstractions;
 using RabbitMQ.Client;
 
-namespace MessageServer.Infrastructure.Repositories.Implementations;
+namespace MessageServer.Application.Implementations;
 
 public class RabbitMqService : IRabbitMqService
 {

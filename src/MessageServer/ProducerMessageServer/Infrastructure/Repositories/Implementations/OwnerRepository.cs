@@ -37,7 +37,7 @@ public class OwnerRepository : IOwnerRepository, IDisposable
     /// </summary>
     /// <param name="owner">Owner entity</param>
     /// <returns></returns>
-    public async Task<Guid> CreateAsync(Owner owner)
+    public async Task<OwnerDto> CreateAsync(Owner owner)
     {
         var newOwner = new Owner
         {
@@ -49,7 +49,8 @@ public class OwnerRepository : IOwnerRepository, IDisposable
         };
         await _dbContext.AddAsync(newOwner);
         await _dbContext.SaveChangesAsync();
-        return newOwner.Id;
+        
+        return OwnerMapper.EntityToDto(newOwner);
     }
 
     /// <summary>

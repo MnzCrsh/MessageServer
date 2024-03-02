@@ -1,17 +1,14 @@
-﻿using FluentValidation;
+﻿namespace ConsumerMessageServer;
 
-namespace MessageServer.Application;
-
-public static class DiServicesExtension
+public static class DiServiceExtension
 {
     public static void RunServiceConfiguration(this WebApplicationBuilder builder)
     {
         var services = builder.Services;
-        
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-        services.AddValidatorsFromAssemblyContaining<Program>();
-        services.AddControllers().AddNewtonsoftJson();
+        services.AddControllers();
         
         services.AddHsts(options =>
         {

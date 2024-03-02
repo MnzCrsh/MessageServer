@@ -11,6 +11,7 @@ namespace ServerTests;
 
 public class OwnerRepoTests
 {
+    //TODO: Fix types
     [Fact]
     public async Task CreateAsync_ShouldCreateOwner_ShouldReturnNewOwnerId()
     {
@@ -19,7 +20,7 @@ public class OwnerRepoTests
         var fCbf = A.Fake<CircuitBreaker.CircuitBreakerFactory>();
         var fStrategy = A.Fake<IOwnerEventStrategy>();
 
-        Guid result;
+        OwnerDto result;
         await using (var dbContext = GetInMemoryDbContext())
         {
             var repository = new OwnerRepository(dbContext, fCbf,fStrategy);
@@ -28,8 +29,8 @@ public class OwnerRepoTests
             result = await repository.CreateAsync(fOwner);
 
             //Assert
-            fOwner.Id = result;
-            dbContext.PetOwners.Any(o => o.Id == result).Should().BeTrue();
+            fOwner.Id = result.Id;
+            dbContext.PetOwners.Any(o => o.Id == result.Id).Should().BeTrue();
         }
         result.Should().Be(fOwner.Id);
     }

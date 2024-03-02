@@ -1,4 +1,5 @@
-﻿using MessageServer.Infrastructure.Repositories.Abstractions;
+﻿using MessageServer.Application.Abstractions;
+using MessageServer.Infrastructure.Repositories.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessageServer.Presentation.Controllers;

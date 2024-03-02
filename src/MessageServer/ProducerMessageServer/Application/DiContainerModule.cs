@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using MessageServer.Application.Abstractions;
+using MessageServer.Application.Implementations;
 using MessageServer.Infrastructure;
 using MessageServer.Infrastructure.Repositories.Abstractions;
 using MessageServer.Infrastructure.Repositories.Implementations;

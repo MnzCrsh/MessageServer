@@ -9,7 +9,7 @@ public interface IOwnerRepository
     /// </summary>
     /// <param name="owner">Owner entity data</param>
     /// <returns>Owner ID</returns>
-    public Task<Guid> CreateAsync(Owner owner);
+    public Task<OwnerDto> CreateAsync(Owner owner);
     
     /// <summary>
     /// Asynchronously returns Owner from data base
